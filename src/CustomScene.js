@@ -319,11 +319,14 @@ export default class CustomScene {
     obj.position.set(x+0.5-5, 0, y+0.5-10);
     obj.name = name + "-" + x + "-" + y
     this.model.add(obj);
+    if (this.engine?.controls?.clickables?.length) {
+      this.engine.controls.clickables.push(obj);
+    }
     if (this.board[x][y][0]) {
       let old = this.board[x][y][0];
       this.model.remove(old);
-      // old.removeFromParent();
-      // console.debug(old);
+      const idx = this.engine.controls.clickables.indexOf(old);
+      this.engine.controls.clickables.splice(idx, 1);
     }
     this.board[x][y][0] = obj;
   }
