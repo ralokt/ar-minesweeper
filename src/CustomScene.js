@@ -319,14 +319,35 @@ export default class CustomScene {
     obj.position.set(x+0.5-5, 0, y+0.5-10);
     obj.name = name + "-" + x + "-" + y
     this.model.add(obj);
-    if (this.engine?.controls?.clickables?.length) {
-      this.engine.controls.clickables.push(obj);
+    const clickablesReady = typeof(this.engine.controls) !== "undefined";
+    if (clickablesReady && (name == "flag" || name == "closed")) {
+      this.engine.controls.clickables.push({
+          target: "*"+name+"*",
+          node: obj,
+      });
+      this.engine.controls.clickNodes.push(obj);
     }
     if (this.board[x][y][0]) {
       let old = this.board[x][y][0];
       this.model.remove(old);
-      const idx = this.engine.controls.clickables.indexOf(old);
-      this.engine.controls.clickables.splice(idx, 1);
+      if (clickablesReady) {
+        let idx = -1;
+        for (let [index, clickable] of this.engine.controls.clickables.entries()) {
+          if (clickable.node.name === old.name) {
+            idx = index;
+            break;
+          }
+        }
+        this.engine.controls.clickables.splice(idx, 1);
+        idx = -1;
+        for (let [index, clickable] of this.engine.controls.clickNodes.entries()) {
+          if (clickable.name === old.name) {
+            idx = index;
+            break;
+          }
+        }
+        this.engine.controls.clickNodes.splice(idx, 1);
+      }
     }
     this.board[x][y][0] = obj;
   }
