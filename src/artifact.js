@@ -4,7 +4,7 @@ export default {
 
   fpsControls: true,
   pointerLockControls: {
-    speed: 1,
+    speed: 5,
   },
   version: 1,
 
@@ -41,6 +41,7 @@ export default {
     "/glb/blow.glb",
     "/glb/flag.glb",
     "/glb/closed.glb",
+    "https://cdn.glitch.global/680d9e3c-bcad-4b00-b719-7d699c1a70fe/plane.glb?v=1726765084363",
   ],
 
   clickables: [
@@ -56,5 +57,20 @@ export default {
   },{
     "audio": "/snd/boom.mp3",
     "autoplay": false
-  }]
+  }],
+
+  video: 'https://cdn.glitch.global/680d9e3c-bcad-4b00-b719-7d699c1a70fe/blood2.mp4?v=1726765048856',
+  videoTargets: ['plane'],
+  loopVideo: false,
+  triggerVideo: false,
+
+  chromaKey: {
+    v2: true,
+    keyColor: 0x00fd3d,
+    width: 512,
+    height: 1024,
+    similarity: 0.2,
+    smoothness: 0.2,
+    spill: 0.5,
+  },
 }

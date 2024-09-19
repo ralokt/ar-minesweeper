@@ -216,6 +216,7 @@ export default class CustomScene {
       "flag",
       "closed",
       "blow",
+      "plane",
     ];
     for (let ii=0; ii<9; ii+=1) {
       names.push(""+ii);
@@ -357,7 +358,7 @@ export default class CustomScene {
     this.updateMusic();
   }
 
-  boom(x, y) {
+  boom(xx, yy) {
     this.blasted = true;
     this.musicLevel = -1;
     this.updateMusic();
@@ -366,7 +367,19 @@ export default class CustomScene {
     setTimeout(() => {
       this.boomElem.play();
       this.boomElem.loop = false;
-      this.putAt(x, y, "blow");
+      this.putAt(xx, yy, "blow");
+
+      const video = document.getElementById('three-video');
+      video.currentTime = 0;
+      video.play();
+
+      const plane = this.engine.model.getObjectByName('plane');
+      // plane.scale.set(3,3,3);
+      plane.scale.set(1,1,1);
+      const {x,y,z} = this.engine.camera.position;
+      plane.position.set(x, y, z-0.05);
+      plane.rotation.set(Math.PI / 2, 0, 0);
+      this.engine.camera.add(plane);
     }, 300);
   }
 
