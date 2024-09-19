@@ -1,6 +1,8 @@
 export default {
   name: 'Artifact',
   slug: 'artifact',
+
+  fpsControls: true,
   pointerLockControls: {
     speed: 1,
   },
