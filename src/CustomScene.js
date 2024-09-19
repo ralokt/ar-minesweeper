@@ -238,7 +238,7 @@ export default class CustomScene {
     }
   }
 
-  initBoard(delOld=true) {
+  initBoard() {
     this.board = [];
     let board_lines = this.BOARD.split("\n");
     for (let xx=0; xx<this.BOARD_W; xx+=1) {
