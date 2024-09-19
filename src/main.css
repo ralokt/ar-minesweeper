@@ -552,3 +552,10 @@ width:calc(100vw - 720px)}
 
 width:calc(100vw - 720px)}
 }
+
+#arm-pointer-lock-activate {
+  z-index: 10900;
+}
+#arm-pointer-lock-activate button {
+  background: transparent;
+}
