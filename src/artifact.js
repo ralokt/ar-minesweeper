@@ -51,10 +51,10 @@ export default {
   clickablesArePointable: true,
 
   audioElements: [{
-    "audio": "http://localhost:8000/snd/click.mp3",
+    "audio": "/snd/click.mp3",
     "autoplay": false
   },{
-    "audio": "http://localhost:8000/snd/boom.mp3",
+    "audio": "/snd/boom.mp3",
     "autoplay": false
   }]
 }
