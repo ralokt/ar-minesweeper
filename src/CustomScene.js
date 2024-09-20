@@ -559,6 +559,7 @@ export default class CustomScene {
     if (this.won || this.blasted) return;
     intersects.forEach(touched => {
       let [xx, yy] = this.posToCoords(touched.node.position);
+      if (this.board[xx][yy][2]) return;
       let cur_state = touched.node.material.name;
       this.TRANSITIONS = {
         closed: "flag",
