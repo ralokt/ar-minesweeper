@@ -41,6 +41,8 @@ export default {
     "/glb/blow.glb",
     "/glb/flag.glb",
     "/glb/closed.glb",
+    "/glb/smiley_cool.glb",
+    "/glb/smiley_cry.glb",
     "https://cdn.glitch.global/680d9e3c-bcad-4b00-b719-7d699c1a70fe/plane.glb?v=1726765084363",
   ],
 

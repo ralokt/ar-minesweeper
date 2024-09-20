@@ -40,7 +40,7 @@ export default class CustomScene {
     c#1
     a0
     c#1    
-  >\`).sound("gm_electric_bass_pick").gain(1.5)
+  >\`).sound("gm_electric_bass_pick").gain(2.5)
 `,
 `
   sound(\`<
@@ -152,10 +152,44 @@ export default class CustomScene {
 
   defineBoard() {
     // at how many open squares to advance to the next music level
-    this.MUSIC_THRESHOLDS = [23, 27, 30, 38, 40, 42, 45].reverse();
+    // this.MUSIC_THRESHOLDS = [23, 27, 30, 38, 40, 42, 45];
 
-    this.victory_coords = [7, 3];
-    this.BOARD = `
+    // this.BOARD = `
+// **********
+// ****556***
+// ***4*2****
+// **442447**
+// 23*3*3****
+// 0225*66***
+// 12*4****6*
+// 1*23*44*31
+// 1111111110
+// 0000000000
+// `.trim();
+    // this.BOARD_W = 10;
+    // this.BOARD_H = 10;
+    this.BOARD_DEFS = [{
+      w: 10,
+      h: 10,
+      victoryCoords: [6, 6],
+      tiles: `
+0000000000
+0112111110
+01*2*11*10
+0223111110
+01*1112110
+01112*4*20
+01113*7*30
+01*12***20
+0111123210
+0000000000
+    `.trim(),
+      musicThresholds: [65, 70, 73, 75, 77, 79, 83],
+    },{
+      w: 10,
+      h: 10,
+      victoryCoords: [7, 3],
+      tiles: `
 **********
 ****556***
 ***4*2****
@@ -166,9 +200,14 @@ export default class CustomScene {
 1*23*44*31
 1111111110
 0000000000
-`.trim();
-    this.BOARD_W = 10;
-    this.BOARD_H = 10;
+    `.trim(),
+      musicThresholds: [23, 27, 30, 38, 40, 42, 45],
+    }];
+    this.curBoardDef = 0;
+  }
+
+  BOARD_DEF() {
+    return this.BOARD_DEFS[this.curBoardDef];
   }
 
   resetGameState() {
@@ -176,7 +215,7 @@ export default class CustomScene {
     this.won = false;
     this.squaresOpened = 0;
     this.musicLevel = 0;
-    this.thresholdsLeft = [...this.MUSIC_THRESHOLDS];
+    this.thresholdsLeft = [...this.BOARD_DEF().musicThresholds].reverse();
     this.nextThreshold = this.thresholdsLeft.pop();
   }
 
@@ -229,6 +268,8 @@ export default class CustomScene {
       "flag",
       "closed",
       "blow",
+      "smiley_cool",
+      "smiley_cry",
     ];
     for (let ii=0; ii<9; ii+=1) {
       names.push(""+ii);
@@ -263,10 +304,10 @@ export default class CustomScene {
 
   initBoard() {
     this.board = [];
-    let board_lines = this.BOARD.split("\n");
-    for (let xx=0; xx<this.BOARD_W; xx+=1) {
+    let board_lines = this.BOARD_DEF().tiles.split("\n");
+    for (let xx=0; xx<this.BOARD_DEF().w; xx+=1) {
       let col = [];
-      for (let yy=0; yy<this.BOARD_H; yy+=1) {
+      for (let yy=0; yy<this.BOARD_DEF().h; yy+=1) {
         let sq_def = board_lines[yy][xx];
         if (sq_def == "*") {
           sq_def = "mine";
@@ -275,8 +316,8 @@ export default class CustomScene {
       }
       this.board.push(col);
     }
-    for (let xx=0; xx<this.BOARD_W; xx+=1) {
-      for (let yy=0; yy<this.BOARD_H; yy+=1) {
+    for (let xx=0; xx<this.BOARD_DEF().w; xx+=1) {
+      for (let yy=0; yy<this.BOARD_DEF().h; yy+=1) {
         this.putAt(xx, yy, "closed");
       }
     }
@@ -305,7 +346,7 @@ export default class CustomScene {
   }
 
   coordsInBounds(xx, yy) {
-    return 0 <= xx && xx < this.BOARD_W && 0 <= yy && yy < this.BOARD_H;
+    return 0 <= xx && xx < this.BOARD_DEF().w && 0 <= yy && yy < this.BOARD_DEF().h;
   }
 
   posChange(new_x, new_y) {
@@ -336,7 +377,8 @@ export default class CustomScene {
         this.boom(x, y);
         return;
       }
-      if (x == this.victory_coords[0] && y == this.victory_coords[1]) {
+      const victoryCoords = this.BOARD_DEF().victoryCoords;
+      if (x == victoryCoords[0] && y == victoryCoords[1]) {
         this.victory();
         return;
       }
@@ -356,8 +398,8 @@ export default class CustomScene {
     }
   }
 
-  putRestartSquare() {
-    let obj = this.model.getObjectByName("0").clone();
+  putRestartSquare(name) {
+    let obj = this.model.getObjectByName(name).clone();
     obj.position.set(this.RESTART_X+0.5-5, 0, this.RESTART_Y+0.5-10);
     obj.name = "RESTART";
     this.model.add(obj);
@@ -404,15 +446,15 @@ export default class CustomScene {
   victory() {
     this.won = true;
     this.updateMusic();
-    // this.delBoard();
-    this.putRestartSquare();
+    this.putRestartSquare("smiley_cool");
+    this.curBoardDef += 1;
+    this.curBoardDef %= this.BOARD_DEFS.length;
   }
 
   boom(xx, yy) {
     this.blasted = true;
     this.musicLevel = -1;
     this.repl.editor.stop();
-    // this.repl.editor.play();
     this.updateMusic();
     this.clickElem.play();
     this.clickElem.loop = false;
@@ -461,7 +503,7 @@ export default class CustomScene {
       plane.rotation.set(Math.PI / 2, 0, 0);
       this.engine.camera.add(plane);
       setTimeout(() => {
-        this.putRestartSquare();
+        this.putRestartSquare("smiley_cry");
         plane.material.depthFunc = oldDF;
         this.initPlane();
         document.getElementById("flashFade").remove();
@@ -469,33 +511,16 @@ export default class CustomScene {
     }, 300);
   }
 
-  onPoint(intersects) {
-    intersects.forEach(touched => {
-      // console.debug(touched.node.material.color);
-      // let material = touched.node.material.clone();
-      // touched.node.material = material;
-      // touched.node.material.color.g = 0.2;
-      // touched.node.material.color.b = 0.2;
-    });
-  }
-
   onTouch(intersects) {
-    // console.debug(intersects);
+    if (this.won || this.blasted) return;
     intersects.forEach(touched => {
-      // console.debug("----------");
-      // console.debug(touched);
-      // console.debug(touched.node.name);
-      // console.debug(touched.node.position);
       let [xx, yy] = this.posToCoords(touched.node.position);
       let cur_state = touched.node.material.name;
-      // console.debug("cs", cur_state);
       this.TRANSITIONS = {
         closed: "flag",
         flag: "closed",
       };
       let new_state = this.TRANSITIONS[cur_state];
-      // console.debug("ns", new_state);
-      // console.debug(xx, yy);
       this.putAt(xx, yy, new_state);
     });
   }
