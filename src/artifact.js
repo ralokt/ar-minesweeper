@@ -65,7 +65,7 @@ export default {
   videoTargets: ['plane'],
   loopVideo: false,
   triggerVideo: false,
-
+  
   chromaKey: {
     v2: true,
     keyColor: 0x00fd3d,

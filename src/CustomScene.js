@@ -151,23 +151,6 @@ export default class CustomScene {
   }
 
   defineBoard() {
-    // at how many open squares to advance to the next music level
-    // this.MUSIC_THRESHOLDS = [23, 27, 30, 38, 40, 42, 45];
-
-    // this.BOARD = `
-// **********
-// ****556***
-// ***4*2****
-// **442447**
-// 23*3*3****
-// 0225*66***
-// 12*4****6*
-// 1*23*44*31
-// 1111111110
-// 0000000000
-// `.trim();
-    // this.BOARD_W = 10;
-    // this.BOARD_H = 10;
     this.BOARD_DEFS = [{
       w: 10,
       h: 10,
@@ -184,7 +167,8 @@ export default class CustomScene {
 0111123210
 0000000000
     `.trim(),
-      musicThresholds: [65, 70, 73, 75, 77, 79, 83],
+      // at how many open squares to advance to the next music level
+      musicThresholds: [65, 67, 70, 72, 74, 76, 79],
     },{
       w: 10,
       h: 10,
@@ -201,6 +185,7 @@ export default class CustomScene {
 1111111110
 0000000000
     `.trim(),
+      // at how many open squares to advance to the next music level
       musicThresholds: [23, 27, 30, 38, 40, 42, 45],
     }];
     this.curBoardDef = 0;
@@ -210,6 +195,10 @@ export default class CustomScene {
     return this.BOARD_DEFS[this.curBoardDef];
   }
 
+  exit() {
+    this.repl.editor.stop();
+  }
+
   resetGameState() {
     this.blasted = false;
     this.won = false;
@@ -217,14 +206,16 @@ export default class CustomScene {
     this.musicLevel = 0;
     this.thresholdsLeft = [...this.BOARD_DEF().musicThresholds].reverse();
     this.nextThreshold = this.thresholdsLeft.pop();
+    this.movedSinceReset = 0;
   }
 
   async beforeLoadModel({ engine }) {
     this.engine = engine;
     await import("https://unpkg.com/@strudel/repl@1.1.0");
     this.repl = document.createElement('strudel-editor');
-    // TODO: change to something completely unused where it can be hidden
-    const someDiv = document.getElementById("arm-pointer-lock-activate");
+    const someDiv = document.createElement("div");
+    someDiv.style.setProperty("opacity", "0")
+    document.body.append(someDiv);
     someDiv.append(this.repl);
     this.updateMusic();
   }
@@ -350,11 +341,60 @@ export default class CustomScene {
   }
 
   posChange(new_x, new_y) {
-    if (new_x == this.RESTART_X && new_y == this.RESTART_Y && (this.won || this.blasted)) {
-        this.doRestart();
+    if (new_x == this.RESTART_X && new_y == this.RESTART_Y) {
+        if (this.won || this.blasted) {
+            this.doRestart();
+        }
     }
+    if (this.movedSinceReset == 2) {
+        console.debug(new_x, new_y);
+        this.message(
+            "<em>Numbers</em> tell you how many squares in the <em>adjacent 8 squares</em> are mines.",
+            "#fff"
+        );
+        setTimeout(() => {
+            this.message(
+                "You can <em>flag</em> squares you think are mines by <em>tapping/clicking</em> them.",
+                "#fff",
+            );
+        }, 3500);
+        setTimeout(() => {
+          this.message("Find the <em>7</em> to win!", "#ff0");
+        }, 7000);
+    }
+    this.movedSinceReset += 1;
     if (!this.coordsInBounds(new_x, new_y)) return;
     this.openSquare(new_x, new_y);
+  }
+
+  message(text, color) {
+    const msgElem = document.createElement("div");
+    msgElem.innerHTML = text;
+    let msgStyle = msgElem.style;
+    msgStyle.setProperty("position", "absolute");
+    msgStyle.setProperty("top", "0px");
+    msgStyle.setProperty("bottom", "0px");
+    msgStyle.setProperty("left", "0px");
+    msgStyle.setProperty("right", "0px");
+    msgStyle.setProperty("font-size", "108px");
+    msgStyle.setProperty("text-align", "center");
+    msgStyle.setProperty("color", color);
+    msgStyle.setProperty("background-color", "#000");
+    msgStyle.setProperty("z-index", "11000");
+    msgStyle.setProperty("padding-top", "50px");
+    msgStyle.setProperty("margin", "200px");
+    document.body.appendChild(msgElem);
+    msgElem.animate([{
+      opacity: 0.5,
+    },{
+      opacity: 0.5,
+      offset: 0.7,
+    },{
+      opacity: 0.0,
+    }],3050);
+    setTimeout(() => {
+      msgElem.remove();
+    }, 3000);
   }
 
   doRestart() {
@@ -447,6 +487,7 @@ export default class CustomScene {
     this.won = true;
     this.updateMusic();
     this.putRestartSquare("smiley_cool");
+    this.message("Well done!<br><br>Walk onto the smiley to advance to the next level!", "#ff0");
     this.curBoardDef += 1;
     this.curBoardDef %= this.BOARD_DEFS.length;
   }
@@ -502,6 +543,9 @@ export default class CustomScene {
       plane.position.set(x-0.7, y-0.7, z-0.6);
       plane.rotation.set(Math.PI / 2, 0, 0);
       this.engine.camera.add(plane);
+      setTimeout(() => {
+        this.message("You are dead.<br><br>Walk onto the smiley to restart!", "#f00");
+      }, 3000);
       setTimeout(() => {
         this.putRestartSquare("smiley_cry");
         plane.material.depthFunc = oldDF;
