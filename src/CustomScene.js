@@ -9,18 +9,12 @@ export default class CustomScene {
     });
     this.THREE = preload.THREE;
 
+    this.RESTART_X = 4;
+    this.RESTART_Y = 15;
+
     this.defineBoard();
     this.defineMusic();
     this.resetGameState();
-  }
-
-  resetGameState() {
-    this.blasted = false;
-    this.won = false;
-    this.squaresOpened = 0;
-    this.musicLevel = 0;
-    this.thresholdsLeft = [...this.MUSIC_THRESHOLDS];
-    this.nextThreshold = this.thresholdsLeft.pop();
   }
 
   defineMusic() {
@@ -103,6 +97,20 @@ export default class CustomScene {
   >\`).sound("gm_distortion_guitar").gain(5)
 `
     ];
+    this.LOSS_MUSIC = `
+  note(\`<
+    a7
+    a7
+    a7
+    a7
+  >/2\`).sound("gm_distortion_guitar").gain(5),
+  note(\`<
+    g#7
+    g#7
+    g#7
+    g#7
+  >/2\`).sound("gm_distortion_guitar").gain(5)
+`;
     this.VICTORY_MUSIC = `
   sound(\`<
     rim*2 rim rim*2 rim
@@ -163,6 +171,15 @@ export default class CustomScene {
     this.BOARD_H = 10;
   }
 
+  resetGameState() {
+    this.blasted = false;
+    this.won = false;
+    this.squaresOpened = 0;
+    this.musicLevel = 0;
+    this.thresholdsLeft = [...this.MUSIC_THRESHOLDS];
+    this.nextThreshold = this.thresholdsLeft.pop();
+  }
+
   async beforeLoadModel({ engine }) {
     this.engine = engine;
     await import("https://unpkg.com/@strudel/repl@1.1.0");
@@ -177,6 +194,8 @@ export default class CustomScene {
     let inner;
     if (this.won) {
       inner = this.VICTORY_MUSIC;
+    } else if (this.blasted) {
+      inner = this.LOSS_MUSIC;
     } else {
       const slice = this.MUSIC_BLOCKS.slice(0, this.musicLevel+1);
       inner = slice.join(",\n");
@@ -194,14 +213,8 @@ export default class CustomScene {
     this.model = engine.model;
     [this.pos_x, this.pos_y] = this.curPos();
     this.initObjects();
-    this.initBoard();
     this.initAudio();
-    for (let xx=0; xx<this.BOARD_W; xx+=1) {
-      for (let yy=0; yy<this.BOARD_H; yy+=1) {
-        this.putAt(xx, yy, "closed");
-      }
-    }
-    this.openSquare(0,9);
+    this.initBoard();
   }
 
   initAudio() {
@@ -216,24 +229,34 @@ export default class CustomScene {
       "flag",
       "closed",
       "blow",
-      "plane",
     ];
     for (let ii=0; ii<9; ii+=1) {
       names.push(""+ii);
     }
 
     for (let name of names) {
-      objs.push(this.model.getObjectByName(name));
-    }
-    for (let obj of objs.values()) {
+      const obj = this.model.getObjectByName(name);
       obj.position.set(-4000, -4000, -4000);
     }
+
+
+    const plane = this.model.getObjectByName("plane");
+    this.model.remove(plane);
+    this.engine.camera.add(plane);
+    plane.position.set(-4000, -4000, -4000);
+
+    this.initPlane();
+  }
+
+  initPlane() {
+    this.engine.camera.getObjectByName("plane").position.set(-4000, -4000, -4000);
   }
 
   delBoard() {
-    for (col of this.board) {
-      for (square of col) {
-        square[0].removeFromParent();
+    for (let [xx, col] of this.board.entries()) {
+      for (let [yy, square] of col.entries()) {
+        this.model.remove(square[0]);
+        this.board[xx][yy][0] = null;
       }
     }
   }
@@ -252,6 +275,12 @@ export default class CustomScene {
       }
       this.board.push(col);
     }
+    for (let xx=0; xx<this.BOARD_W; xx+=1) {
+      for (let yy=0; yy<this.BOARD_H; yy+=1) {
+        this.putAt(xx, yy, "closed");
+      }
+    }
+    this.openSquare(0,9);
   }
 
   tick() {
@@ -280,8 +309,20 @@ export default class CustomScene {
   }
 
   posChange(new_x, new_y) {
+    if (new_x == this.RESTART_X && new_y == this.RESTART_Y && (this.won || this.blasted)) {
+        this.doRestart();
+    }
     if (!this.coordsInBounds(new_x, new_y)) return;
     this.openSquare(new_x, new_y);
+  }
+
+  doRestart() {
+    let obj = this.model.getObjectByName("RESTART");
+    this.model.remove(obj);
+    this.delBoard();
+    this.resetGameState();
+    this.initBoard();
+    this.updateMusic();
   }
 
   openSquare(x, y) {
@@ -313,6 +354,13 @@ export default class CustomScene {
         }
       }
     }
+  }
+
+  putRestartSquare() {
+    let obj = this.model.getObjectByName("0").clone();
+    obj.position.set(this.RESTART_X+0.5-5, 0, this.RESTART_Y+0.5-10);
+    obj.name = "RESTART";
+    this.model.add(obj);
   }
 
   putAt(x, y, name) {
@@ -356,11 +404,15 @@ export default class CustomScene {
   victory() {
     this.won = true;
     this.updateMusic();
+    // this.delBoard();
+    this.putRestartSquare();
   }
 
   boom(xx, yy) {
     this.blasted = true;
     this.musicLevel = -1;
+    this.repl.editor.stop();
+    // this.repl.editor.play();
     this.updateMusic();
     this.clickElem.play();
     this.clickElem.loop = false;
@@ -368,18 +420,52 @@ export default class CustomScene {
       this.boomElem.play();
       this.boomElem.loop = false;
       this.putAt(xx, yy, "blow");
+      setTimeout(() => {
+        const flashFade = document.createElement("div");
+        flashFade.id = "flashFade";
+        let flashStyle = flashFade.style;
+        flashStyle.setProperty("position", "absolute");
+        flashStyle.setProperty("top", "0px");
+        flashStyle.setProperty("bottom", "0px");
+        flashStyle.setProperty("left", "0px");
+        flashStyle.setProperty("right", "0px");
+        flashStyle.setProperty("z-index", "10200");
+        document.body.appendChild(flashFade);
+        flashFade.animate([{
+          opacity: 0.9,
+          background: "#fff",
+        },{
+          opacity: 0.7,
+          background: "#fff",
+          offset: 0.3,
+        },{
+          opacity: 0.5,
+          background: "#000",
+          offset: 0.8,
+        },{
+          opacity: 0.5,
+          background: "#000",
+        }],4900);
+      }, 100);
 
       const video = document.getElementById('three-video');
       video.currentTime = 0;
       video.play();
 
-      const plane = this.engine.model.getObjectByName('plane');
-      // plane.scale.set(3,3,3);
-      plane.scale.set(1,1,1);
+      const plane = this.engine.camera.getObjectByName('plane');
+      plane.scale.set(4,2,2);
+      const oldDF = plane.material.depthFunc;
+      plane.material.depthFunc = this.THREE.AlwaysDepth;
       const {x,y,z} = this.engine.camera.position;
-      plane.position.set(x, y, z-0.05);
+      plane.position.set(x-0.7, y-0.7, z-0.6);
       plane.rotation.set(Math.PI / 2, 0, 0);
       this.engine.camera.add(plane);
+      setTimeout(() => {
+        this.putRestartSquare();
+        plane.material.depthFunc = oldDF;
+        this.initPlane();
+        document.getElementById("flashFade").remove();
+      }, 5000);
     }, 300);
   }
 

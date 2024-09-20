@@ -4,7 +4,7 @@ export default {
 
   fpsControls: true,
   pointerLockControls: {
-    speed: 5,
+    speed: 1,
   },
   version: 1,
 
@@ -73,4 +73,6 @@ export default {
     smoothness: 0.2,
     spill: 0.5,
   },
+
+  nosort: true
 }
