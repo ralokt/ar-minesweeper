@@ -415,4 +415,76 @@ export default class CustomScene {
       this.putAt(xx, yy, new_state);
     });
   }
+
+  getRandomInt(min, max) {
+    const minCeiled = Math.ceil(min);
+    const maxFloored = Math.floor(max);
+    return Math.floor(Math.random() * (maxFloored - minCeiled) + minCeiled); // The maximum is exclusive and the minimum is inclusive
+  }
+
+  _placeMine(board, xx, yy) {
+    board[xx][yy] = "*";
+    for (let dx of [-1, 0, 1]) {
+      for (let dy of [-1, 0, 1]) {
+        let nx = xx + dx;
+        let ny = yy + dy;
+        if (nx < 0 || nx >= 10 || ny < 0 || ny >= 10) {
+          continue;
+        }
+        if (board[nx][ny] === "*") {
+          continue;
+        }
+        board[nx][ny] += 1;
+      }
+    }
+  }
+
+  _placeSeven(board) {
+    let xx = this.getRandomInt(4, 7);
+    let yy = this.getRandomInt(2, 5);
+    this._placeMine(board, xx-1, yy-1);
+    this._placeMine(board, xx+1, yy-1);
+    this._placeMine(board, xx-1, yy+1);
+    this._placeMine(board, xx+1, yy+1);
+    this._placeMine(board, xx, yy+1);
+    this._placeMine(board, xx, yy-1);
+    this._placeMine(board, xx+1, yy);
+    // this._placeMine(board, xx-1, yy);
+    return [xx, yy];
+  }
+
+  genRandBoard() {
+    let board = Array(10).fill(null).map(() => Array(10).fill(0));
+    let [sx, sy] = this._placeSeven(board);
+    for (let ii=0; ii<12; ++ii) {
+      while (true) {
+        let xx = this.getRandomInt(0, 10);
+        let yy = this.getRandomInt(0, 10);
+        if (board[xx][yy] === "*") {
+          continue;
+        }
+        if (xx > 7 && yy < 2) {
+          // guarantee a starting opening
+          continue;
+        }
+        if (sx-1<=xx && xx<=sx+1 && sy-1<=yy && yy<=sy+1 ) {
+          // don't disturb the 7
+          continue;
+        }
+        this._placeMine(board, xx, yy);
+        break;
+      }
+    }
+
+    board = board.map(ll => ll.join("")).join("\n");
+    console.debug(board);
+    return {
+      w: 10,
+      h: 10,
+      victoryCoords: [sy, sx],
+      musicThresholds: [5, 10, 15, 20, 25, 30, 35],
+      tiles: board,
+      initialOpen: [0, 9]
+    };
+  }
 }
