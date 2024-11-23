@@ -124,10 +124,11 @@ export default class CustomScene {
 
   initBoard() {
     this.board = [];
-    let board_lines = this.getBoardDef().tiles.split("\n");
-    for (let xx=0; xx<this.getBoardDef().w; xx+=1) {
+    let board_def = this.getBoardDef()
+    let board_lines = board_def.tiles.split("\n");
+    for (let xx=0; xx<board_def.w; xx+=1) {
       let col = [];
-      for (let yy=0; yy<this.getBoardDef().h; yy+=1) {
+      for (let yy=0; yy<board_def.h; yy+=1) {
         let sq_def = board_lines[yy][xx];
         if (sq_def == "*") {
           sq_def = "mine";
@@ -136,8 +137,8 @@ export default class CustomScene {
       }
       this.board.push(col);
     }
-    for (let xx=0; xx<this.getBoardDef().w; xx+=1) {
-      for (let yy=0; yy<this.getBoardDef().h; yy+=1) {
+    for (let xx=0; xx<board_def.w; xx+=1) {
+      for (let yy=0; yy<board_def.h; yy+=1) {
         this.putAt(xx, yy, "closed");
       }
     }
