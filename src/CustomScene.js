@@ -13,8 +13,6 @@ export default class CustomScene {
     this.RESTART_X = 4;
     this.RESTART_Y = 15;
 
-    this.defineBoard();
-    this.resetGameState();
   }
 
   async defineMusic() {
@@ -94,8 +92,15 @@ export default class CustomScene {
     someDiv.style.setProperty("opacity", "0")
     document.body.append(someDiv);
     someDiv.append(this.repl);
+    this.defineBoard();
+    this.resetGameState();
     await music_promise;
     this.updateMusic();
+    this.model = engine.model;
+    [this.pos_x, this.pos_y] = this.curPos();
+    this.initObjects();
+    this.initAudio();
+    this.initBoard();
   }
 
   getMusicCode() {
@@ -115,14 +120,6 @@ export default class CustomScene {
   updateMusic() {
     this.repl.editor.setCode(this.getMusicCode());
     this.repl.editor.evaluate();
-  }
-
-  afterLoadModel({ engine }) {
-    this.model = engine.model;
-    [this.pos_x, this.pos_y] = this.curPos();
-    this.initObjects();
-    this.initAudio();
-    this.initBoard();
   }
 
   initAudio() {
