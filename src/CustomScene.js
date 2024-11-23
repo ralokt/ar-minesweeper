@@ -192,7 +192,7 @@ export default class CustomScene {
     this.curBoardDef = 0;
   }
 
-  BOARD_DEF() {
+  getBoardDef() {
     return this.BOARD_DEFS[this.curBoardDef];
   }
 
@@ -205,7 +205,7 @@ export default class CustomScene {
     this.won = false;
     this.squaresOpened = 0;
     this.musicLevel = 0;
-    this.thresholdsLeft = [...this.BOARD_DEF().musicThresholds].reverse();
+    this.thresholdsLeft = [...this.getBoardDef().musicThresholds].reverse();
     this.nextThreshold = this.thresholdsLeft.pop();
     this.movedSinceReset = 0;
   }
@@ -296,10 +296,10 @@ export default class CustomScene {
 
   initBoard() {
     this.board = [];
-    let board_lines = this.BOARD_DEF().tiles.split("\n");
-    for (let xx=0; xx<this.BOARD_DEF().w; xx+=1) {
+    let board_lines = this.getBoardDef().tiles.split("\n");
+    for (let xx=0; xx<this.getBoardDef().w; xx+=1) {
       let col = [];
-      for (let yy=0; yy<this.BOARD_DEF().h; yy+=1) {
+      for (let yy=0; yy<this.getBoardDef().h; yy+=1) {
         let sq_def = board_lines[yy][xx];
         if (sq_def == "*") {
           sq_def = "mine";
@@ -308,8 +308,8 @@ export default class CustomScene {
       }
       this.board.push(col);
     }
-    for (let xx=0; xx<this.BOARD_DEF().w; xx+=1) {
-      for (let yy=0; yy<this.BOARD_DEF().h; yy+=1) {
+    for (let xx=0; xx<this.getBoardDef().w; xx+=1) {
+      for (let yy=0; yy<this.getBoardDef().h; yy+=1) {
         this.putAt(xx, yy, "closed");
       }
     }
@@ -338,7 +338,7 @@ export default class CustomScene {
   }
 
   coordsInBounds(xx, yy) {
-    return 0 <= xx && xx < this.BOARD_DEF().w && 0 <= yy && yy < this.BOARD_DEF().h;
+    return 0 <= xx && xx < this.getBoardDef().w && 0 <= yy && yy < this.getBoardDef().h;
   }
 
   posChange(new_x, new_y) {
@@ -418,7 +418,7 @@ export default class CustomScene {
         this.boom(x, y);
         return;
       }
-      const victoryCoords = this.BOARD_DEF().victoryCoords;
+      const victoryCoords = this.getBoardDef().victoryCoords;
       if (x == victoryCoords[0] && y == victoryCoords[1]) {
         this.victory();
         return;
