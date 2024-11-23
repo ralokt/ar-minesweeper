@@ -2,17 +2,8 @@ import * as THREE from "https://stagingengine.artificialmuseum.com/three.js";
 
 export default class CustomScene {
   constructor({ artifact, mergeConfig, preload }) {
-    /*
-     * mergeConfig allows us to merge the default config of this scene
-     * with the custom config defined in each individual artifact.
-     */
-    this.config = mergeConfig(artifact, {
-      rotationSpeed: 1,
-    });
-
     this.RESTART_X = 4;
     this.RESTART_Y = 15;
-
   }
 
   async _getJsAsset(name) {
