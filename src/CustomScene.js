@@ -24,7 +24,7 @@ export default class CustomScene {
     this.VICTORY_MUSIC = music.victory;
   }
 
-  defineBoard() {
+  async defineBoard() {
     this.BOARD_DEFS = [{
       w: 10,
       h: 10,
@@ -92,7 +92,7 @@ export default class CustomScene {
     someDiv.style.setProperty("opacity", "0")
     document.body.append(someDiv);
     someDiv.append(this.repl);
-    this.defineBoard();
+    await this.defineBoard();
     this.resetGameState();
     await music_promise;
     this.updateMusic();
