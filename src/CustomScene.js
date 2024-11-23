@@ -142,7 +142,7 @@ export default class CustomScene {
         this.putAt(xx, yy, "closed");
       }
     }
-    this.openSquare(0,9);
+    this.openSquare(...board_def.initialOpen);
   }
 
   tick() {

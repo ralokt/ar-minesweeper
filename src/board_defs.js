@@ -16,6 +16,7 @@
   `.trim(),
   // at how many open squares to advance to the next music level
   musicThresholds: [65, 67, 70, 72, 74, 76, 79],
+  initialOpen: [0, 9]
 },{
   w: 10,
   h: 10,
@@ -34,4 +35,5 @@
   `.trim(),
   // at how many open squares to advance to the next music level
   musicThresholds: [23, 27, 30, 38, 40, 42, 45],
+  initialOpen: [0, 9]
 }]
