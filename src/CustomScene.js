@@ -1,6 +1,11 @@
 import * as THREE from "https://stagingengine.artificialmuseum.com/three.js";
 
 export default class CustomScene {
+  constructor({artifact, mergeConfig, preload}) {
+    // prevent tick() from running until we are actually done with initialization
+    this.ready = false;
+  }
+
   async _getJsAsset(name) {
     return eval(await (await fetch("/" + name + ".js")).text());
   }
@@ -56,6 +61,8 @@ export default class CustomScene {
     this.initObjects();
     this.initAudio();
     this.initBoard();
+    // we can start doing things in tick()
+    this.ready = true;
   }
 
   getMusicCode() {
@@ -146,6 +153,7 @@ export default class CustomScene {
   }
 
   tick() {
+    if (!this.ready) return;
     let [pos_x, pos_y] = this.curPos();
     if (this.pos_x != pos_x || this.pos_y != pos_y) {
       this.posChange(pos_x, pos_y);
