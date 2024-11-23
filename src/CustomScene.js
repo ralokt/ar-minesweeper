@@ -1,11 +1,6 @@
 import * as THREE from "https://stagingengine.artificialmuseum.com/three.js";
 
 export default class CustomScene {
-  constructor({ artifact, mergeConfig, preload }) {
-    this.RESTART_X = 4;
-    this.RESTART_Y = 15;
-  }
-
   async _getJsAsset(name) {
     return eval(await (await fetch("/" + name + ".js")).text());
   }
@@ -42,6 +37,8 @@ export default class CustomScene {
 
   async beforeLoadModel({ engine }) {
     // effectively the initializer
+    this.RESTART_X = 4;
+    this.RESTART_Y = 15;
     this.engine = engine;
     let music_promise = this.defineMusic();
     await import("https://unpkg.com/@strudel/repl@1.1.0");
