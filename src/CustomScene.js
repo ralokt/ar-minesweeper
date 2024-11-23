@@ -50,6 +50,7 @@ export default class CustomScene {
   }
 
   async beforeLoadModel({ engine }) {
+    // effectively the initializer
     this.engine = engine;
     let music_promise = this.defineMusic();
     await import("https://unpkg.com/@strudel/repl@1.1.0");
@@ -111,7 +112,6 @@ export default class CustomScene {
       const obj = this.model.getObjectByName(name);
       obj.position.set(-4000, -4000, -4000);
     }
-
 
     const plane = this.model.getObjectByName("plane");
     this.model.remove(plane);
