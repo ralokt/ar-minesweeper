@@ -1,3 +1,5 @@
+import * as THREE from "https://stagingengine.artificialmuseum.com/three.js";
+
 export default class CustomScene {
   constructor({ artifact, mergeConfig, preload }) {
     /*
@@ -7,7 +9,6 @@ export default class CustomScene {
     this.config = mergeConfig(artifact, {
       rotationSpeed: 1,
     });
-    this.THREE = preload.THREE;
 
     this.RESTART_X = 4;
     this.RESTART_Y = 15;
@@ -538,7 +539,7 @@ export default class CustomScene {
       const plane = this.engine.camera.getObjectByName('plane');
       plane.scale.set(4,2,2);
       const oldDF = plane.material.depthFunc;
-      plane.material.depthFunc = this.THREE.AlwaysDepth;
+      plane.material.depthFunc = THREE.AlwaysDepth;
       const {x,y,z} = this.engine.camera.position;
       plane.position.set(x-0.7, y-0.7, z-0.6);
       plane.rotation.set(Math.PI / 2, 0, 0);
