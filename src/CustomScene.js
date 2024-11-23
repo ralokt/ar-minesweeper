@@ -15,17 +15,19 @@ export default class CustomScene {
 
   }
 
+  async _getJsAsset(name) {
+    return eval(await (await fetch("/" + name + ".js")).text());
+  }
+
   async defineMusic() {
-    let music_response = await fetch("/music.js");
-    let music_source = await music_response.text();
-    let music = eval(music_source);
+    let music = await this._getJsAsset("music");
     this.MUSIC_BLOCKS = music.main;
     this.LOSS_MUSIC = music.loss;
     this.VICTORY_MUSIC = music.victory;
   }
 
   async defineBoard() {
-    this.BOARD_DEFS = eval(await (await fetch("/board_defs.js")).text());
+    this.BOARD_DEFS = await this._getJsAsset("board_defs");
     this.curBoardDef = 0;
   }
 
