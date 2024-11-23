@@ -44,7 +44,6 @@ export default class CustomScene {
     // effectively the initializer
     this.RESTART_X = 4;
     this.RESTART_Y = 15;
-    this.engine = engine;
     let music_promise = this.defineMusic();
     await import("https://unpkg.com/@strudel/repl@1.1.0");
     this.repl = document.createElement('strudel-editor');
@@ -56,13 +55,17 @@ export default class CustomScene {
     this.resetGameState();
     await music_promise;
     this.updateMusic();
-    this.model = engine.model;
     [this.pos_x, this.pos_y] = this.curPos();
-    this.initObjects();
     this.initAudio();
     this.initBoard();
     // we can start doing things in tick()
     this.ready = true;
+  }
+
+  afterLoadModel({ engine }) {
+    this.engine = engine;
+    this.model = engine.model;
+    this.initObjects();
   }
 
   getMusicCode() {
