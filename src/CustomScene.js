@@ -14,7 +14,6 @@ export default class CustomScene {
     this.RESTART_Y = 15;
 
     this.defineBoard();
-    this.defineMusic();
     this.resetGameState();
   }
 
@@ -212,6 +211,7 @@ export default class CustomScene {
 
   async beforeLoadModel({ engine }) {
     this.engine = engine;
+    this.defineMusic();
     await import("https://unpkg.com/@strudel/repl@1.1.0");
     this.repl = document.createElement('strudel-editor');
     const someDiv = document.createElement("div");
