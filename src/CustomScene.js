@@ -17,7 +17,7 @@ export default class CustomScene {
     this.resetGameState();
   }
 
-  defineMusic() {
+  async defineMusic() {
     // layers of music to successively add
     this.MUSIC_BLOCKS = [
 `
@@ -211,7 +211,7 @@ export default class CustomScene {
 
   async beforeLoadModel({ engine }) {
     this.engine = engine;
-    this.defineMusic();
+    await this.defineMusic();
     await import("https://unpkg.com/@strudel/repl@1.1.0");
     this.repl = document.createElement('strudel-editor');
     const someDiv = document.createElement("div");
