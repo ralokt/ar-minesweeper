@@ -40,7 +40,7 @@ export default class CustomScene {
     d1
     c#1
     a0
-    c#1    
+    c#1
   >\`).sound("gm_electric_bass_pick").gain(2.5)
 `,
 `
