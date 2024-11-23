@@ -87,13 +87,14 @@ export default class CustomScene {
 
   async beforeLoadModel({ engine }) {
     this.engine = engine;
-    await this.defineMusic();
+    let music_promise = this.defineMusic();
     await import("https://unpkg.com/@strudel/repl@1.1.0");
     this.repl = document.createElement('strudel-editor');
     const someDiv = document.createElement("div");
     someDiv.style.setProperty("opacity", "0")
     document.body.append(someDiv);
     someDiv.append(this.repl);
+    await music_promise;
     this.updateMusic();
   }
 
