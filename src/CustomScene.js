@@ -4,6 +4,9 @@ export default class CustomScene {
   constructor({artifact, mergeConfig, preload}) {
     // prevent tick() from running until we are actually done with initialization
     this.ready = false;
+    this.afterLoadModelDone = new Promise((resolve, reject) => {
+      this.resolveAfterLoadModelDone = resolve;
+    });
   }
 
   async _getJsAsset(name) {
@@ -55,6 +58,7 @@ export default class CustomScene {
     this.resetGameState();
     await music_promise;
     this.updateMusic();
+    await this.afterLoadModelDone;
     [this.pos_x, this.pos_y] = this.curPos();
     this.initAudio();
     this.initBoard();
@@ -66,6 +70,7 @@ export default class CustomScene {
     this.engine = engine;
     this.model = engine.model;
     this.initObjects();
+    this.resolveAfterLoadModelDone();
   }
 
   getMusicCode() {
