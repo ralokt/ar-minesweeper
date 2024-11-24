@@ -446,10 +446,11 @@ export default class CustomScene {
     this._placeMine(board, xx+1, yy-1);
     this._placeMine(board, xx-1, yy+1);
     this._placeMine(board, xx+1, yy+1);
-    this._placeMine(board, xx, yy+1);
-    this._placeMine(board, xx, yy-1);
-    this._placeMine(board, xx+1, yy);
-    // this._placeMine(board, xx-1, yy);
+    let direction = this.getRandomInt(0, 4);
+    if (direction !== 0) this._placeMine(board, xx, yy+1);
+    if (direction !== 1) this._placeMine(board, xx, yy-1);
+    if (direction !== 2) this._placeMine(board, xx+1, yy);
+    if (direction !== 3) this._placeMine(board, xx-1, yy);
     return [xx, yy];
   }
 
