@@ -122,6 +122,7 @@ export default class CustomScene {
     plane.position.set(-4000, -4000, -4000);
 
     this.initPlane();
+    this.putCurPosSquare();
   }
 
   initPlane() {
@@ -163,11 +164,14 @@ export default class CustomScene {
   tick() {
     if (!this.ready) return;
     let [pos_x, pos_y] = this.curPos();
+    console.debug(pos_x, pos_y);
     if (this.pos_x != pos_x || this.pos_y != pos_y) {
       this.posChange(pos_x, pos_y);
     }
     this.pos_x = pos_x;
     this.pos_y = pos_y;
+    let obj = this.model.getObjectByName("CUR_POS");
+    obj.position.set(this.pos_x+0.5-5, 0.2, this.pos_y+0.5-10);
   }
 
   curPos() {
@@ -288,6 +292,12 @@ export default class CustomScene {
     let obj = this.model.getObjectByName(name).clone();
     obj.position.set(this.RESTART_X+0.5-5, 0, this.RESTART_Y+0.5-10);
     obj.name = "RESTART";
+    this.model.add(obj);
+  }
+
+  putCurPosSquare() {
+    let obj = this.model.getObjectByName("blow").clone();
+    obj.name = "CUR_POS";
     this.model.add(obj);
   }
 
