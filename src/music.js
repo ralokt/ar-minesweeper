@@ -78,13 +78,13 @@
       a7
       a7
       a7
-    >/2\`).sound("gm_distortion_guitar").gain(5),
+    >/2\`).sound("gm_distortion_guitar").gain(2.5),
     note(\`<
       g#7
       g#7
       g#7
       g#7
-    >/2\`).sound("gm_distortion_guitar").gain(5)
+    >/2\`).sound("gm_distortion_guitar").gain(2.5)
 `,
   victory: `
     sound(\`<
