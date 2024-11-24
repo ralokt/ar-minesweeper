@@ -14,7 +14,7 @@
 0111123210
 0000000000
   `.trim(),
-  // at how many open squares to advance to the next music level
+  // at how many open squares to add the respective music layer
   musicThresholds: [65, 67, 70, 72, 74, 76, 79],
   initialOpen: [0, 9]
 },{
@@ -33,7 +33,7 @@
 1111111110
 0000000000
   `.trim(),
-  // at how many open squares to advance to the next music level
+  // at how many open squares to add the respective music layer
   musicThresholds: [23, 27, 30, 38, 40, 42, 45],
   initialOpen: [0, 9]
 }]
