@@ -335,7 +335,9 @@ export default class CustomScene {
     this.putRestartSquare("smiley_cool");
     this.message("Well done!<br><br>Walk onto the smiley to advance to the next level!", "#ff0");
     this.curBoardDef += 1;
-    this.curBoardDef %= this.BOARD_DEFS.length;
+    while (this.curBoardDef >= this.BOARD_DEFS.length) {
+      this.BOARD_DEFS.push(this.genRandBoard());
+    }
   }
 
   boom(xx, yy) {
