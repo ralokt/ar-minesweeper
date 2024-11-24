@@ -468,7 +468,7 @@ export default class CustomScene {
           // guarantee a starting opening
           continue;
         }
-        if (sx-1<=xx && xx<=sx+1 && sy-1<=yy && yy<=sy+1 ) {
+        if (sx-1<=xx && xx<=sx+1 && sy-1<=yy && yy<=sy+1) {
           // don't disturb the 7
           continue;
         }
