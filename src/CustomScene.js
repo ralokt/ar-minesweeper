@@ -97,6 +97,15 @@ export default class CustomScene {
     this.boomElem = document.getElementById("three-audio-1");
   }
 
+  initShadow() {
+    const geometry = new THREE.CircleGeometry(0.4);
+    let material = new THREE.MeshBasicMaterial( { color: 0x555555 } );
+    material.transparent = true;
+    material.opacity = 0.5;
+    const circle = new THREE.Mesh(geometry, material);
+    return circle;
+  }
+
   initObjects() {
     let objs = [];
     let names = [
@@ -115,6 +124,10 @@ export default class CustomScene {
       const obj = this.model.getObjectByName(name);
       obj.position.set(-4000, -4000, -4000);
     }
+    this.shadow = this.initShadow();
+    this.shadow.position.set(-4000, -4000, -4000);
+    this.shadow.rotation.set(-(Math.PI / 2), 0, 0);
+    this.model.add(this.shadow);
 
     const plane = this.model.getObjectByName("plane");
     this.model.remove(plane);
@@ -163,6 +176,7 @@ export default class CustomScene {
   tick() {
     if (!this.ready) return;
     let [pos_x, pos_y] = this.curPos();
+    this.shadow.position.set(this.engine.camera.position.x, 0.11, this.engine.camera.position.z);
     if (this.pos_x != pos_x || this.pos_y != pos_y) {
       this.posChange(pos_x, pos_y);
     }
