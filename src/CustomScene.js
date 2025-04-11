@@ -236,13 +236,15 @@ export default class CustomScene {
     msgStyle.setProperty("bottom", "0px");
     msgStyle.setProperty("left", "0px");
     msgStyle.setProperty("right", "0px");
-    msgStyle.setProperty("font-size", "108px");
+    msgStyle.setProperty("font-size", "10vh");
     msgStyle.setProperty("text-align", "center");
     msgStyle.setProperty("color", color);
     msgStyle.setProperty("background-color", "#000");
     msgStyle.setProperty("z-index", "11000");
-    msgStyle.setProperty("padding-top", "50px");
-    msgStyle.setProperty("margin", "200px");
+    msgStyle.setProperty("padding-top", "5vh");
+    msgStyle.setProperty("padding-bottom", "5vh");
+    msgStyle.setProperty("height", "fit-content");
+    msgStyle.setProperty("margin", "19vh");
     document.body.appendChild(msgElem);
     msgElem.animate([{
       opacity: 0.5,
