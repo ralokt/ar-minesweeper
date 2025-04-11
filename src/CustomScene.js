@@ -106,6 +106,39 @@ export default class CustomScene {
     return circle;
   }
 
+  initHUD() {
+    this.hudElem = document.createElement("div");
+    this.hudElem.innerHTML = "Yes<br>henlo<br>I<br>am HUD";
+    let hudStyle = this.hudElem.style;
+    hudStyle.setProperty("position", "absolute");
+    hudStyle.setProperty("bottom", "0px");
+    hudStyle.setProperty("left", "0px");
+    hudStyle.setProperty("font-size", "3vh");
+    hudStyle.setProperty("text-align", "left");
+    hudStyle.setProperty("color", "#fff");
+    hudStyle.setProperty("background-color", "#000");
+    hudStyle.setProperty("z-index", "11000");
+    hudStyle.setProperty("padding", "2vh");
+    hudStyle.setProperty("height", "fit-content");
+    hudStyle.setProperty("width", "fit-content");
+    hudStyle.setProperty("margin", "0.5vh");
+    hudStyle.setProperty("opacity", "0.8");
+    document.body.appendChild(this.hudElem);
+  }
+
+  updateHUD() {
+    let fmt = (component) => (component.toFixed(5));
+    let hudText = "Camera pos:<br>";
+    hudText += "x: " + fmt(this.engine.camera.position.x) + "<br>";
+    hudText += "y: " + fmt(this.engine.camera.position.y) + "<br>";
+    hudText += "z: " + fmt(this.engine.camera.position.z) + "<br>";
+    hudText += "Camera rot:<br>";
+    hudText += "x: " + fmt(this.engine.camera.rotation.x) + "<br>";
+    hudText += "y: " + fmt(this.engine.camera.rotation.y) + "<br>";
+    hudText += "z: " + fmt(this.engine.camera.rotation.z) + "<br>";
+    this.hudElem.innerHTML = hudText;
+  }
+
   initObjects() {
     let objs = [];
     let names = [
@@ -133,6 +166,8 @@ export default class CustomScene {
     this.model.remove(plane);
     this.engine.camera.add(plane);
     plane.position.set(-4000, -4000, -4000);
+
+    this.initHUD();
 
     this.initPlane();
   }
@@ -175,6 +210,7 @@ export default class CustomScene {
 
   tick() {
     if (!this.ready) return;
+    this.updateHUD();
     let [pos_x, pos_y] = this.curPos();
     this.shadow.position.set(this.engine.camera.position.x, 0.11, this.engine.camera.position.z);
     if (this.pos_x != pos_x || this.pos_y != pos_y) {
