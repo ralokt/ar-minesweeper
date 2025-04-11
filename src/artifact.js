@@ -7,6 +7,7 @@ export default {
     speed: 1,
   },
   version: 1,
+  showHUD: false,
 
   /*
    * type

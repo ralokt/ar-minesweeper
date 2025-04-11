@@ -4,6 +4,7 @@ export default class CustomScene {
   constructor({artifact, mergeConfig, preload}) {
     // prevent tick() from running until we are actually done with initialization
     this.ready = false;
+    this.showHUD = artifact.showHUD;
     this.afterLoadModelDone = new Promise((resolve, reject) => {
       this.resolveAfterLoadModelDone = resolve;
     });
@@ -167,7 +168,9 @@ export default class CustomScene {
     this.engine.camera.add(plane);
     plane.position.set(-4000, -4000, -4000);
 
-    this.initHUD();
+    if (this.showHUD) {
+      this.initHUD();
+    }
 
     this.initPlane();
   }
@@ -210,7 +213,7 @@ export default class CustomScene {
 
   tick() {
     if (!this.ready) return;
-    this.updateHUD();
+    if (this.showHUD) this.updateHUD();
     let [pos_x, pos_y] = this.curPos();
     this.shadow.position.set(this.engine.camera.position.x, 0.11, this.engine.camera.position.z);
     if (this.pos_x != pos_x || this.pos_y != pos_y) {
