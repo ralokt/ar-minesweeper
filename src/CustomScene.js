@@ -179,9 +179,9 @@ export default class CustomScene {
     this.shadow.position.set(this.engine.camera.position.x, 0.11, this.engine.camera.position.z);
     if (this.pos_x != pos_x || this.pos_y != pos_y) {
       this.posChange(pos_x, pos_y);
+      this.pos_x = pos_x;
+      this.pos_y = pos_y;
     }
-    this.pos_x = pos_x;
-    this.pos_y = pos_y;
   }
 
   curPos() {
